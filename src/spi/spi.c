@@ -6,7 +6,7 @@
 
 void temp(void) { print_string("temp"); }
 
-void spi_setup(void) {
+void spi_init(void) {
   // Set our PORTB pins as outs
   DDRB |= (1 << SS_PIN) | (1 << MOSI_PIN) | (1 << SCK_PIN) | (1 << DC_PIN) |
           (1 << RESET_PIN);

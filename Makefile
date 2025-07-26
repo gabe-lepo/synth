@@ -10,14 +10,15 @@ OPT = -Os
 # Directories
 DIR_SPI = src/spi
 DIR_UART = src/uart
+DIR_I2C = src/i2c
 DIR_MAIN = src/main
-DIR_TEST = src/test
 DIR_BUILD = build
 
 # Object files for main program
 OBJ = $(DIR_BUILD)/main.o \
       $(DIR_BUILD)/spi.o \
       $(DIR_BUILD)/uart.o \
+      $(DIR_BUILD)/i2c.o
 
 # Output files
 ELF = $(DIR_BUILD)/main.elf
@@ -35,6 +36,7 @@ CFLAGS = -mmcu=$(MCU) \
          $(OPT) \
          -I$(DIR_SPI) \
          -I$(DIR_UART) \
+         -I$(DIR_I2C) \
          -Wall -Wextra
 LDFLAGS = -mmcu=$(MCU)
 
@@ -45,13 +47,16 @@ all: clean build upload connect
 build: $(HEX)
 
 # Object file compilation
-$(DIR_BUILD)/main.o: $(DIR_MAIN)/main_oled.c | $(DIR_BUILD)
+$(DIR_BUILD)/main.o: $(DIR_MAIN)/main.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 $(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 $(DIR_BUILD)/uart.o: $(DIR_UART)/uart.c | $(DIR_BUILD)
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+$(DIR_BUILD)/i2c.o: $(DIR_I2C)/i2c.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 # Link
@@ -75,4 +80,4 @@ clean:
 	rm -rf $(DIR_BUILD)/*
 
 # Phony targets
-.PHONY: all build upload clean connect test-uart test-spi
+.PHONY: all build upload clean connect

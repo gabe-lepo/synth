@@ -12,7 +12,7 @@
 #define RESET_PIN PB0
 #define BUSY_PIN PD2
 
-void spi_setup(void);
+void spi_init(void);
 void spi_slave_select_low(void);
 void spi_slave_select_high(void);
 void spi_check_busy(void);
