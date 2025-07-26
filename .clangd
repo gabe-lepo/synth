@@ -1,0 +1,24 @@
+CompileFlags:
+  Add:
+    - -I/opt/homebrew/Cellar/avr-gcc@9/9.4.0_1/avr/include
+    - -I.
+    - -Isrc
+    - -DF_CPU=16000000UL
+    - -D__AVR_ATmega328P__
+    - -std=c17
+    - --target=avr
+    - -fms-extensions
+    - -fasm-blocks
+    - -D__GNUC__=9
+    - -D__GNUC_MINOR__=4
+    - -D__AVR__=1
+    - -D__AVR_ARCH__=5
+    - -x
+    - c
+  Remove:
+    - -W*
+Diagnostics:
+  Suppress:
+    - pp_expr_bad_token_start_expr
+    - unknown_typename
+    - unknown_anytype
