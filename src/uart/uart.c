@@ -1,10 +1,17 @@
 #include "uart.h"
 #include <avr/io.h>
-#include <stdlib.h>
+#include <stdio.h>
 
 #define F_CPU 16000000UL
 #define BAUD 9600
 #define MY_UBRR ((F_CPU / 16 / BAUD) - 1)
+
+// Static func for stdio integration
+static int uart_putchar(char c, FILE *stream);
+
+// Create file stream for uart
+static FILE uart_output =
+    FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 void uart_init(void) {
   // Set baud rate
@@ -16,6 +23,9 @@ void uart_init(void) {
 
   // Set frame format: 8 data bits, 1 stop
   UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+
+  // Redirect stdout to UART
+  stdout = &uart_output;
 }
 
 void uart_transmit(unsigned char data) {
@@ -26,30 +36,14 @@ void uart_transmit(unsigned char data) {
   UDR0 = data;
 }
 
-void print_string(const char *str) {
-  while (*str) {
-    uart_transmit(*str++);
+static int uart_putchar(char c, FILE *stream) {
+  // Avoid compiler warning
+  (void)stream;
+
+  // Convert '\n' to '\r\n'
+  if (c == '\n') {
+    uart_transmit('\r');
   }
-
-  uart_transmit('\r');
-  uart_transmit('\n');
-}
-
-void print_hex(uint8_t value) {
-  // '\t', '0', 'x', 2 hex digits, and '\0'
-  char buffer[7];
-  buffer[0] = '\t';
-  buffer[1] = '0';
-  buffer[2] = 'x';
-
-  // Convert to hex, add leading zero if needed, buffer
-  if (value < 0x10) {
-    buffer[3] = '0';
-    itoa(value, &buffer[4], 16);
-  } else {
-    itoa(value, &buffer[3], 16);
-  }
-  buffer[5] = '\0';
-
-  print_string(buffer);
+  uart_transmit(c);
+  return 0;
 }

@@ -1,10 +1,8 @@
 #include "spi.h"
-#include "../uart/uart.h"
 #include <avr/io.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <util/delay.h>
-
-void temp(void) { print_string("temp"); }
 
 void spi_init(void) {
   // Set our PORTB pins as outs
@@ -33,7 +31,7 @@ void spi_init(void) {
 
   // Dont double SCK rate
   if (SPSR & (1 << SPI2X)) {
-    print_string("Found SPI2X bit, turning it off!");
+    printf("Found SPI2X bit, turning it off!\n");
     SPSR &= ~(1 << SPI2X);
   }
 
@@ -92,40 +90,40 @@ void spi_send_data(uint8_t data) {
 }
 
 void test_dc_pin(void) {
-  print_string("test_dc_pin");
+  printf("test_dc_pin\n");
 
   _delay_ms(3000);
-  print_string("\tDC pin HIGH");
+  printf("\tDC pin HIGH\n");
   PORTB |= (1 << DC_PIN);
   _delay_ms(5000);
-  print_string("\tDC pin LOW");
+  printf("\tDC pin LOW\n");
   PORTB &= ~(1 << DC_PIN);
 
-  print_string("test_dc_pin done");
+  printf("test_dc_pin done\n");
 }
 
 void test_cs_pin(void) {
-  print_string("test_cs_pin");
+  printf("test_cs_pin\n");
 
   _delay_ms(3000);
-  print_string("\tCS pin HIGH");
+  printf("\tCS pin HIGH\n");
   PORTB |= (1 << SS_PIN);
   _delay_ms(5000);
-  print_string("\tCS pin LOW");
+  printf("\tCS pin LOW\n");
   PORTB &= ~(1 << SS_PIN);
 
-  print_string("test_cs_pin done");
+  printf("test_cs_pin done\n");
 }
 
 void test_reset_pin(void) {
-  print_string("test_reset_pin");
+  printf("test_reset_pin\n");
 
   _delay_ms(3000);
-  print_string("\tRESET pin LOW");
+  printf("\tRESET pin LOW\n");
   PORTB &= ~(1 << RESET_PIN);
   _delay_ms(5000);
-  print_string("\tRESET pin HIGH");
+  printf("\tRESET pin HIGH\n");
   PORTB |= (1 << RESET_PIN);
 
-  print_string("test_reset_pin done");
+  printf("test_reset_pin done\n");
 }

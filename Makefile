@@ -10,15 +10,19 @@ OPT = -Os
 # Directories
 DIR_SPI = src/spi
 DIR_UART = src/uart
-DIR_I2C = src/i2c
-DIR_MAIN = src/main
+DIR_TWI = src/twi
+DIR_TWI_UTIL = src/twi/util
+DIR_LED = src/led
+DIR_MAIN = src
 DIR_BUILD = build
 
 # Object files for main program
 OBJ = $(DIR_BUILD)/main.o \
       $(DIR_BUILD)/spi.o \
       $(DIR_BUILD)/uart.o \
-      $(DIR_BUILD)/i2c.o
+      $(DIR_BUILD)/led.o \
+      $(DIR_BUILD)/twi.o \
+      $(DIR_BUILD)/twi_util.o
 
 # Output files
 ELF = $(DIR_BUILD)/main.elf
@@ -36,7 +40,9 @@ CFLAGS = -mmcu=$(MCU) \
          $(OPT) \
          -I$(DIR_SPI) \
          -I$(DIR_UART) \
-         -I$(DIR_I2C) \
+         -I$(DIR_TWI) \
+         -I$(DIR_TWI_UTIL) \
+         -I$(DIR_LED) \
          -Wall -Wextra
 LDFLAGS = -mmcu=$(MCU)
 
@@ -56,7 +62,13 @@ $(DIR_BUILD)/spi.o: $(DIR_SPI)/spi.c | $(DIR_BUILD)
 $(DIR_BUILD)/uart.o: $(DIR_UART)/uart.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
-$(DIR_BUILD)/i2c.o: $(DIR_I2C)/i2c.c | $(DIR_BUILD)
+$(DIR_BUILD)/twi.o: $(DIR_TWI)/twi.c | $(DIR_BUILD)
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+$(DIR_BUILD)/twi_util.o: $(DIR_TWI_UTIL)/twi_util.c | $(DIR_BUILD)
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+$(DIR_BUILD)/led.o: $(DIR_LED)/led.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 # Link
