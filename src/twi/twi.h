@@ -1,37 +1,38 @@
-#ifndef I2C_H
-#define I2C_H
+#ifndef TWI_H
+#define TWI_H
 
 #include <avr/io.h>
 #include <stdint.h>
 
 #define F_CPU 16000000UL
-#define TWI_FREQUENCY 400000
+#define TWI_FREQ_400K 400000
+#define TWI_FREQ_100K 100000
 
-#if (F_CPU / TWI_FREQUENCY - 16) / (2 * 1) >= 10 &&                            \
-    (F_CPU / TWI_FREQUENCY - 16) / (2 * 1) <= 0xFF
+#if (F_CPU / TWI_FREQ_400K - 16) / (2 * 1) >= 10 &&                            \
+    (F_CPU / TWI_FREQ_400K - 16) / (2 * 1) <= 0xFF
 #define TWI_PRESCALER 1
 #define TWPS0_VALUE 0
 #define TWPS1_VALUE 0
-#elif (F_CPU / TWI_FREQUENCY - 16) / (2 * 4) >= 10 &&                          \
-    (F_CPU / TWI_FREQUENCY - 16) / (2 * 4) <= 0xFF
+#elif (F_CPU / TWI_FREQ_400K - 16) / (2 * 4) >= 10 &&                          \
+    (F_CPU / TWI_FREQ_400K - 16) / (2 * 4) <= 0xFF
 #define TWI_PRESCALER 4
 #define TWPS0_VALUE 1
 #define TWPS1_VALUE 0
-#elif (F_CPU / TWI_FREQUENCY - 16) / (2 * 16) >= 10 &&                         \
-    (F_CPU / TWI_FREQUENCY - 16) / (2 * 16) <= 0xFF
+#elif (F_CPU / TWI_FREQ_400K - 16) / (2 * 16) >= 10 &&                         \
+    (F_CPU / TWI_FREQ_400K - 16) / (2 * 16) <= 0xFF
 #define TWI_PRESCALER 16
 #define TWPS0_VALUE 0
 #define TWPS1_VALUE 1
-#elif (F_CPU / TWI_FREQUENCY - 16) / (2 * 64) >= 10 &&                         \
-    (F_CPU / TWI_FREQUENCY - 16) / (2 * 64) <= 0xFF
+#elif (F_CPU / TWI_FREQ_400K - 16) / (2 * 64) >= 10 &&                         \
+    (F_CPU / TWI_FREQ_400K - 16) / (2 * 64) <= 0xFF
 #define TWI_PRESCALER 64
 #define TWPS0_VALUE 1
 #define TWPS1_VALUE 1
 #else
-#error "TWI_FREQUENCY too low!"
+#error "TWI_FREQ_400K too low!"
 #endif
 
-#define TWBR_VALUE ((F_CPU / TWI_FREQUENCY - 16) / (2 * TWI_PRESCALER))
+#define TWBR_VALUE ((F_CPU / TWI_FREQ_400K - 16) / (2 * TWI_PRESCALER))
 
 // Mask TWI slave addressing byte with given id and write/read intend.
 #define TWI_ADDRESS_W(id) (((id) << 1) & ~0x01) // write
@@ -70,6 +71,7 @@ uint8_t twi_addressWrite(uint8_t addr);
 
 // mcp4725 funcs
 uint8_t mcp4725_write_dac(uint16_t value);
+uint8_t mcp4725_write_dac_cmd_mode(uint16_t value);
 void mcp4725_triangle_wave(void);
 void mcp4725_square_wave(void);
 
