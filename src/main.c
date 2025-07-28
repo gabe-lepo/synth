@@ -1,5 +1,6 @@
 #include "./util/debug.h"
 #include "led/led.h"
+#include "mcp4725/mcp4725.h"
 #include "twi/twi.h"
 #include "uart/uart.h"
 #include <avr/io.h>

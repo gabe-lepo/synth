@@ -12,6 +12,7 @@ DIR_SPI = src/spi
 DIR_UART = src/uart
 DIR_TWI = src/twi
 DIR_TWI_UTIL = src/twi/util
+DIR_MCP = src/mcp4725
 DIR_LED = src/led
 DIR_MAIN = src
 DIR_BUILD = build
@@ -22,7 +23,8 @@ OBJ = $(DIR_BUILD)/main.o \
       $(DIR_BUILD)/uart.o \
       $(DIR_BUILD)/led.o \
       $(DIR_BUILD)/twi.o \
-      $(DIR_BUILD)/twi_util.o
+      $(DIR_BUILD)/twi_util.o \
+      $(DIR_BUILD)/mcp4725.o
 
 # Output files
 ELF = $(DIR_BUILD)/main.elf
@@ -43,6 +45,7 @@ CFLAGS = -mmcu=$(MCU) \
          -I$(DIR_TWI) \
          -I$(DIR_TWI_UTIL) \
          -I$(DIR_LED) \
+         -I$(DIR_MCP) \
          -Wall -Wextra
 LDFLAGS = -mmcu=$(MCU)
 
@@ -69,6 +72,9 @@ $(DIR_BUILD)/twi_util.o: $(DIR_TWI_UTIL)/twi_util.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 $(DIR_BUILD)/led.o: $(DIR_LED)/led.c | $(DIR_BUILD)
+	avr-gcc $(CFLAGS) -c $< -o $@
+
+$(DIR_BUILD)/mcp4725.o: $(DIR_MCP)/mcp4725.c | $(DIR_BUILD)
 	avr-gcc $(CFLAGS) -c $< -o $@
 
 # Link

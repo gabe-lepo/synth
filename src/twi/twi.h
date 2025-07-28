@@ -2,6 +2,7 @@
 #define TWI_H
 
 #include <avr/io.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #define F_CPU 16000000UL
@@ -38,15 +39,16 @@
 #define TWI_ADDRESS_W(id) (((id) << 1) & ~0x01) // write
 #define TWI_ADDRESS_R(id) (((id) << 1) | 0x01)  // read
 
+// Easy status checks
 #define TW_STATUS_MASK                                                         \
   (_BV(TWS7) | _BV(TWS6) | _BV(TWS5) | _BV(TWS4) | _BV(TWS3))
 #define TW_STATUS (TWSR & TW_STATUS_MASK)
 
-// I2C pins on the atmega328p
+// TWI pins on the atmega328p
 #define SDA_PIN PC4 // physical A4
 #define SCL_PIN PC5 // physical A5
 
-// I2C Status codes
+// TWI statuses
 #define I2C_START_OK 0x08
 #define I2C_REPEAT_START_OK 0x10
 #define I2C_SLA_W_ACK 0x18
@@ -63,16 +65,23 @@
 #define MCP4725_CMD_WRITEDAC 0x40
 #define MCP4725_CMD_WRITEDACEEPROM 0X60
 
-// twi
+// clang-format off
 void twi_init(void);
 uint8_t twi_start(void);
 void twi_stop(void);
+uint8_t twi_repStart(void);
 uint8_t twi_addressWrite(uint8_t addr);
-
-// mcp4725 funcs
-uint8_t mcp4725_write_dac(uint16_t value);
-uint8_t mcp4725_write_dac_cmd_mode(uint16_t value);
-void mcp4725_triangle_wave(void);
-void mcp4725_square_wave(void);
+uint8_t twi_addressRead(uint8_t addr);
+uint8_t twi_write(uint8_t data);
+size_t twi_writeBurst(uint8_t *data, size_t len);
+uint8_t twi_readAck(uint8_t *data);
+size_t twi_readAckBurst(uint8_t *data, size_t len);
+uint8_t twi_readNoAck(uint8_t *data);
+size_t twi_readNoAckBurst(uint8_t *data, size_t len);
+uint8_t twi_writeToSlave(uint8_t address, uint8_t *data, size_t len);
+uint8_t twi_readFromSlave(uint8_t address, uint8_t *data, size_t len);
+uint8_t twi_writeToSlaveRegister(uint8_t address, uint8_t reg, uint8_t *data, size_t len);
+uint8_t twi_readFromSlaveRegister(uint8_t address, uint8_t reg, uint8_t *data, size_t len);
+// clang-format on
 
 #endif
