@@ -1,4 +1,5 @@
 #include "twi.h"
+#include "../led/led.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -288,10 +289,10 @@ uint8_t mcp4725_write_dac(uint16_t value) {
 }
 
 uint8_t mcp4725_write_dac_cmd_mode(uint16_t value) {
-  printf("Starting write_dac (command mode) with value: 0x%04X\n", value);
+  led_on();
 
   value &= 0x0FFF;
-  printf("Value after 12-bit assert: 0x%04X\n", value);
+  printf("%d\n", value);
 
   if (twi_start()) {
     printf("TWI start failed\n");
@@ -305,26 +306,25 @@ uint8_t mcp4725_write_dac_cmd_mode(uint16_t value) {
   }
 
   // Command mode, 3 bytes
-  // Byte 1: Command byte
-  uint8_t byte1 = MCP4725_CMD_WRITEDAC;
-  if (twi_write(byte1)) {
+  // Byte 1: Command
+  if (twi_write(MCP4725_CMD_WRITEDAC)) {
     printf("TWI command byte failed\n");
     twi_stop();
     return 1;
   }
 
-  // Byte 2: Upper 8 bits of 12-bit value
+  // Byte 2: Upper 8 bits
   uint8_t byte2 = (value >> 4) & 0xFF;
-  printf("Sending byte 2: 0x%02X\n", byte2);
+  // printf("Sending byte 2: 0x%02X\n", byte2);
   if (twi_write(byte2)) {
     printf("TWI byte 2 failed\n");
     twi_stop();
     return 1;
   }
 
-  // Byte 3: Lower 4 bits in upper nibble
+  // Byte 3: Lower 4 bits
   uint8_t byte3 = (value & 0x0F) << 4;
-  printf("Sending byte 3: 0x%02X\n", byte3);
+  // printf("Sending byte 3: 0x%02X\n", byte3);
   if (twi_write(byte3)) {
     printf("TWI byte 3 failed\n");
     twi_stop();
@@ -332,7 +332,7 @@ uint8_t mcp4725_write_dac_cmd_mode(uint16_t value) {
   }
 
   twi_stop();
-  printf("DAC write (command mode) done\n");
+  led_off();
   return 0;
 }
 
@@ -350,10 +350,7 @@ void mcp4725_triangle_wave(void) {
         printf("Failed writing to DAC for rising edge, counter: %u\n", counter);
         return;
       }
-      if (counter % 100 == 0) {
-        printf("%u\r", counter);
-      }
-      _delay_ms(1);
+      // _delay_us(10);
     }
 
     // Falling edge
@@ -364,10 +361,7 @@ void mcp4725_triangle_wave(void) {
                counter);
         return;
       }
-      if (counter % 100 == 0) {
-        printf("%u\r", counter);
-      }
-      _delay_ms(1);
+      // _delay_us(10);
     }
   }
 }
@@ -377,17 +371,17 @@ void mcp4725_square_wave(void) {
 
   while (1) {
     printf("Low\n");
-    if (mcp4725_write_dac(0)) {
+    if (mcp4725_write_dac_cmd_mode(0)) {
       printf("Failed writing to DAC for low side\n");
       return;
     }
-    _delay_ms(2000);
+    _delay_ms(3000);
 
     printf("High\n");
-    if (mcp4725_write_dac(4095)) {
+    if (mcp4725_write_dac_cmd_mode(4095)) {
       printf("Failed writing to DAC for low side\n");
       return;
     }
-    _delay_ms(2000);
+    _delay_ms(3000);
   }
 }
