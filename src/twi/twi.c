@@ -281,7 +281,7 @@ uint8_t mcp4725_write_dac(uint16_t value) {
 }
 
 uint8_t mcp4725_write_dac_cmd_mode(uint16_t value) {
-  led_on();
+  // led_on();
 
   value &= 0x0FFF;
   printf("%d\n", value);
@@ -324,7 +324,8 @@ uint8_t mcp4725_write_dac_cmd_mode(uint16_t value) {
   }
 
   twi_stop();
-  led_off();
+  _delay_ms(1);
+  // led_off();
   return 0;
 }
 
@@ -342,7 +343,11 @@ void mcp4725_triangle_wave(void) {
         printf("Failed writing to DAC for rising edge, counter: %u\n", counter);
         return;
       }
-      // _delay_us(10);
+      if (counter % 100 == 0) {
+        led_on();
+        _delay_ms(5);
+        led_off();
+      }
     }
 
     // Falling edge
@@ -353,7 +358,11 @@ void mcp4725_triangle_wave(void) {
                counter);
         return;
       }
-      // _delay_us(10);
+      if (counter % 100 == 0) {
+        led_on();
+        _delay_ms(5);
+        led_off();
+      }
     }
   }
 }
