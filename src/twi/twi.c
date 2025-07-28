@@ -1,5 +1,6 @@
 #include "twi.h"
 #include "../led/led.h"
+#include "../util/debug.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -17,9 +18,9 @@ void twi_init(void) {
   TWCR = (1 << TWEN);
 
   //clang-format off
-  printf("twi_init done, values:\n");
-  printf("\tF_CPU: %lu | TWBR_VALUE: %lu | TWPS1_VALUE: %d | TWPS0_VALUE: %d\n",
-         F_CPU, TWBR_VALUE, TWPS1_VALUE, TWPS0_VALUE);
+  // printf("twi_init done, values:\n");
+  // printf("\tF_CPU: %lu | TWBR_VALUE: %lu | TWPS1_VALUE: %d | TWPS0_VALUE:
+  // %d\n", F_CPU, TWBR_VALUE, TWPS1_VALUE, TWPS0_VALUE);
   //clang-format on
 }
 
@@ -241,10 +242,8 @@ uint8_t twi_readFromSlaveRegister(uint8_t address, uint8_t reg, uint8_t *data,
 
 // mcp4725 funcs
 uint8_t mcp4725_write_dac(uint16_t value) {
-  printf("Starting write_dac with value: 0x%04X\n", value);
   // Ensure 12-bit value
   value &= 0x0FFF;
-  printf("Value after 12-bit assert: 0x%04X\n", value);
 
   // Start TWI
   if (twi_start()) {
@@ -253,7 +252,6 @@ uint8_t mcp4725_write_dac(uint16_t value) {
   }
 
   // Send device address with write bit
-  printf("Sending address write: 0x%02X\n", MCP4725_ADDR);
   if (twi_addressWrite(MCP4725_ADDR)) {
     printf("TWI address write failed\n");
     twi_stop();
@@ -263,8 +261,6 @@ uint8_t mcp4725_write_dac(uint16_t value) {
   // Fast mode: 2 data bytes (no command byte)
   // Byte 1: upper 8 bits of value
   uint8_t byte1 = (value >> 4) & 0xFF;
-  printf("Sending upper 8 bits of value: 0x%02X (%d)\n", byte1, byte1);
-
   if (twi_write(byte1)) {
     printf("TWI byte 1 failed\n");
     twi_stop();
@@ -274,10 +270,6 @@ uint8_t mcp4725_write_dac(uint16_t value) {
   // Byte 2: Lower 4 bits shifted left
   uint8_t byte2 = (value & 0x0F) << 4;
   byte2 |= 0x00; // No power down bits
-  printf(
-      "Sending lower 4 bits shifted left with no power off bits: 0x%02X (%d)\n",
-      byte2, byte2);
-
   if (twi_write(byte2)) {
     printf("TWI byte 2 failed\n");
     twi_stop();

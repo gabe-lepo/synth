@@ -5,7 +5,7 @@ MCU = atmega328p
 F_CPU = 16000000UL # 16 MHz
 
 # Optimization level
-OPT = -Os
+OPT = -Os # space optimization
 
 # Directories
 DIR_SPI = src/spi

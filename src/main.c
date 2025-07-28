@@ -1,3 +1,4 @@
+#include "./util/debug.h"
 #include "led/led.h"
 #include "twi/twi.h"
 #include "uart/uart.h"

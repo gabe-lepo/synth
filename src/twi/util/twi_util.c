@@ -1,4 +1,5 @@
 #include "twi_util.h"
+#include "../../util/debug.h"
 #include "../twi.h"
 #include <stdio.h>
 
